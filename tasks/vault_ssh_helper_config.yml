@@ -1,0 +1,42 @@
+---
+
+- name: Install required packages
+  yum:
+    name: wget
+    state: present
+    update_cache: yes
+
+- name: Install required packages
+  yum:
+    name: unzip
+    state: present
+    update_cache: yes
+
+- name: Create vault-ssh-helper config directory
+  file:
+    path: "{{ ssh_helper_path }}"
+    state: directory
+    user: root
+    group: root
+
+- name: Download vault-ssh-helper
+  get_url:
+    url: "{{ ssh_helper_download_url }}"
+    dest: /tmp/
+
+- name: Uncompress vault-ssh-helper downloaded file
+  unarchive: 
+    src: "/tmp/{{ ssh_helper_zipped }}"
+    dest: /usr/local/bin/vault-ssh-helper
+    mode: 0755
+    owner: root
+    group: root
+    remote_src: yes  
+
+- name: Upload vault-ssh-helper configuration
+  copy:
+    src: config.hcl.j2
+    dest: "{{ ssh_helper_path }}/config.hcl"
+
+
+    

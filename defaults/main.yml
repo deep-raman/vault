@@ -10,3 +10,7 @@ max_lease: 10h
 default_lease: 10h
 vault_user: vault
 vault_group: vault
+ssh_helper_version: 0.1.4
+ssh_helper_zipped: "vault-ssh-helper_{{ ssh_helper_version }}_linux_amd64.zip"
+ssh_helper_download_url: https://releases.hashicorp.com/vault-ssh-helper/{{ ssh_helper_version }}/{{ ssh_helper_zipped }}
+ssh_helper_path: /etc/vault-ssh-helper.d
