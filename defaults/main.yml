@@ -1,0 +1,12 @@
+---
+
+vault_version: 1.4.1
+vault_zipped_file: vault_{{ vault_version }}_linux_amd64.zip
+download_url: "https://releases.hashicorp.com/vault/{{ vault_version }}/{{ vault_zipped_file }}"
+vault_home_path: /opt/vault
+vault_port: 8200
+vault_api_addr: 10.114.0.2
+max_lease: 10h
+default_lease: 10h
+vault_user: vault
+vault_group: vault
