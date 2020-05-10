@@ -96,4 +96,7 @@
   
 - debug:
     var: vault_init.stdout_lines
+
+- import_tasks: vault_ssh_helper_config.yml
+  tags: ssh_helper
  
