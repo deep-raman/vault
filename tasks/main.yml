@@ -1,0 +1,42 @@
+---
+
+- name: Install required packages
+  yum:
+    name: wget
+    state: present
+    update_cache: yes
+
+- name: Create vault home
+  file:
+    path: "{{ vault_home_path }}"
+    state: directory
+
+- name: Create directories under vault home
+  file:
+    path: "{{ vault_home_path }}/{{ item }}"
+    state: directory
+  with_items:
+    - bin
+    - conf
+    - data
+    - logs
+
+- name: Download vault
+  get_url:
+    url: "{{ download_url }}"
+    dest: /tmp/
+
+- name: Uncompress vault downloaded file
+  unarchive: 
+    src: "/tmp/{{ vault_zipped_file }}"
+    dest: "{{ vault_home_path }}/bin/"
+    remote_src: yes  
+
+- name: Set permissions
+  file:
+    path: "{{ vault_home_path }}"
+    state: directory
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: 0755
+    recurse: yes
