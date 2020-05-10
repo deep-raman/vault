@@ -75,3 +75,19 @@
     name: vault
     state: started
     enabled: yes
+
+- name: Export vault binary path
+  command: "{{ item }}"
+  with_items:
+    - "export PATH=$PATH:{{ vault_home_path }}/bin"
+    - "echo \"export PATH=$PATH:vault_home_path/bin\" >> ~/.bashrc"
+    - "export VAULT_ADDRESS=http://{{ vault_api_addr }}:8200"
+    - "echo \"export VAULT_ADDR=http://{{ vault_api_addr }}:8200\" >> ~/.bashrc"
+
+- name: Initiate vault
+  command: vault operator init
+  register: vault_init
+  
+- debug:
+    var: vault_init.stdout_lines
+ 
