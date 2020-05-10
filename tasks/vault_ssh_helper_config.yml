@@ -16,8 +16,8 @@
   file:
     path: "{{ ssh_helper_path }}"
     state: directory
-    user: root
-    group: root
+    #user: root
+    #group: root
 
 - name: Download vault-ssh-helper
   get_url:
@@ -27,16 +27,57 @@
 - name: Uncompress vault-ssh-helper downloaded file
   unarchive: 
     src: "/tmp/{{ ssh_helper_zipped }}"
-    dest: /usr/local/bin/vault-ssh-helper
+    dest: /usr/local/bin/
     mode: 0755
     owner: root
     group: root
     remote_src: yes  
 
 - name: Upload vault-ssh-helper configuration
-  copy:
+  template:
     src: config.hcl.j2
     dest: "{{ ssh_helper_path }}/config.hcl"
 
+- name: Add lines to /etc/pam.d/sshd
+  blockinfile:
+    dest: "{{ pamd_sshd_file }}"
+    marker: "#{mark} VAULT : ANSIBLE MANAGED BLOCK"
+    state: present
+    backup: yes
+    block: |
+      auth requisite pam_exec.so quiet expose_authtok log={{ ssh_helper_log }} {{ ssh_helper_binary }} -dev -config={{ ssh_helper_config }}
+      auth optional pam_unix.so not_set_pass use_first_pass nodelay
 
-    
+- name: SSH | Set PasswordAuthentication
+  lineinfile:
+    dest: "{{ sshd_file }}"
+    regexp: "^#?(PasswordAuthentication)"
+    line: 'PasswordAuthentication no'
+    state: present
+
+- name: SSH | Set UsePAM
+  lineinfile:
+    dest: "{{ sshd_file }}"
+    regexp: "^#?(UsePAM)"
+    line: 'UsePAM yes'
+    state: present
+
+- name: SSH | Set ChallengeResponseAuthentication
+  lineinfile:
+    dest: "{{ sshd_file }}"
+    regexp: "^ChallengeResponseAuthentication no"
+    line: '#ChallengeResponseAuthentication no'
+    state: present
+
+- name: SSH | Set ChallengeResponseAuthentication
+  lineinfile:
+    dest: "{{ sshd_file }}"
+    regexp: "^#ChallengeResponseAuthentication yes"
+    line: 'ChallengeResponseAuthentication yes'
+    state: present
+
+- name: SSH | Restart sshd service
+  systemd:
+    name: sshd
+    state: restarted
+  
