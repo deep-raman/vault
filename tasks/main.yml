@@ -6,6 +6,12 @@
     state: present
     update_cache: yes
 
+- name: Install required packages
+  yum:
+    name: unzip
+    state: present
+    update_cache: yes
+
 - name: Create vault home
   file:
     path: "{{ vault_home_path }}"
@@ -77,12 +83,12 @@
     enabled: yes
 
 - name: Export vault binary path
-  command: "{{ item }}"
+  shell: "{{ item }}"
   with_items:
     - "export PATH=$PATH:{{ vault_home_path }}/bin"
-    - "echo \"export PATH=$PATH:vault_home_path/bin\" >> ~/.bashrc"
+    - "echo \"export PATH=$PATH:{{ vault_home_path }}/bin\" >> /root/.bashrc"
     - "export VAULT_ADDRESS=http://{{ vault_api_addr }}:{{ vault_port }}"
-    - "echo \"export VAULT_ADDR=http://{{ vault_api_addr }}:{{ vault_port }}\" >> ~/.bashrc"
+    - "echo \"export VAULT_ADDR=http://{{ vault_api_addr }}:{{ vault_port }}\" >> /root/.bashrc"
 
 - name: Initiate vault
   command: vault operator init
