@@ -1,0 +1,21 @@
+[Unit]
+Description=vault service
+Requires=network-online.target
+After=network-online.target
+ConditionFileNotEmpty={{ vault_home_path }}/conf/config.json
+
+[Service]
+User={{ vault_user }}
+Group={{ vault_group }}
+EnvironmentFile=-/etc/sysconfig/vault
+Environment=GOMAXPROCS=2
+Restart=on-failure
+ExecStart={{ vault_home_path }}/bin/vault server -config={{ vault_home_path }}/conf/config.json
+StandardOutput={{ vault_home_path }}/logs/output.log
+StandardError={{ vault_home_path }}/logs/error.log
+LimitMEMLOCK=infinity
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
