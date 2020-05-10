@@ -21,6 +21,19 @@
     - data
     - logs
 
+- name: Create vault user group
+  group:
+    name: "{{ vault_group }}"
+    state: present
+
+- name: Create vault user
+  user:
+    name: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    home: "{{ vault_home_path }}"
+    shell: /bin/false
+    state: present
+
 - name: Download vault
   get_url:
     url: "{{ download_url }}"
@@ -40,3 +53,25 @@
     group: "{{ vault_group }}"
     mode: 0755
     recurse: yes
+
+- name: Upload vault config file
+  template:
+    src: config.json.j2
+    dest: "{{ vault_home_path }}/conf/config.json"
+    backup: yes
+
+- name: Upload vault service file
+  template:
+    src: vault.service.j2
+    dest: /etc/systemd/system/vault.service
+    backup: yes
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Start and enable vault service
+  systemd:
+    name: vault
+    state: started
+    enabled: yes
