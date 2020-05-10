@@ -1,0 +1,17 @@
+{
+  "listener": [{
+    "tcp": {
+      "address" : "0.0.0.0:{{ vault_port }}",
+      "tls_disable" : 1
+    }
+  }],
+  "api_addr": "http://{{ vault_api_addr }}:{{ vault_port }}",
+  "storage": {
+     "file": {
+       "path" : "{{ vault_home_path }}/data"
+     }
+  },
+  "max_lease_ttl": "{{ max_lease }}",
+  "default_lease_ttl": "{{ default_lease }}",
+  "ui":true
+ }
