@@ -81,8 +81,8 @@
   with_items:
     - "export PATH=$PATH:{{ vault_home_path }}/bin"
     - "echo \"export PATH=$PATH:vault_home_path/bin\" >> ~/.bashrc"
-    - "export VAULT_ADDRESS=http://{{ vault_api_addr }}:8200"
-    - "echo \"export VAULT_ADDR=http://{{ vault_api_addr }}:8200\" >> ~/.bashrc"
+    - "export VAULT_ADDRESS=http://{{ vault_api_addr }}:{{ vault_port }}"
+    - "echo \"export VAULT_ADDR=http://{{ vault_api_addr }}:{{ vault_port }}\" >> ~/.bashrc"
 
 - name: Initiate vault
   command: vault operator init
